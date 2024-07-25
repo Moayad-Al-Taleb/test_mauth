@@ -12,6 +12,7 @@ class PostController extends Controller
 {
     use ApiResponse;
 
+    // عرض جميع المنشورات غير المؤرشفة
     public function index()
     {
         try {
@@ -22,6 +23,7 @@ class PostController extends Controller
         }
     }
 
+    // إنشاء منشور جديد
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -38,6 +40,7 @@ class PostController extends Controller
         }
     }
 
+    // عرض منشور محدد بناءً على المعرف (ID)
     public function show($id)
     {
         try {
@@ -52,6 +55,7 @@ class PostController extends Controller
         }
     }
 
+    // تحديث منشور محدد بناءً على المعرف (ID)
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
@@ -73,6 +77,7 @@ class PostController extends Controller
         }
     }
 
+    // أرشفة منشور محدد بناءً على المعرف (ID)
     public function archive($id)
     {
         try {
@@ -88,6 +93,7 @@ class PostController extends Controller
         }
     }
 
+    // عرض جميع المنشورات المؤرشفة
     public function archivedPosts()
     {
         try {
@@ -98,6 +104,7 @@ class PostController extends Controller
         }
     }
 
+    // استعادة منشور مؤرشف بناءً على المعرف (ID)
     public function restore($id)
     {
         try {
@@ -113,6 +120,7 @@ class PostController extends Controller
         }
     }
 
+    // حذف منشور نهائيًا بناءً على المعرف (ID)
     public function destroy($id)
     {
         try {
