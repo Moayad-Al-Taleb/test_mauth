@@ -12,9 +12,10 @@ return new class extends Migration {
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 30)->unique();
+            $table->string('title', 100)->unique();
             $table->text('body');
             $table->enum('status', ['0', '1'])->default('0');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
