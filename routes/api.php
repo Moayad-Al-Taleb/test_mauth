@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,8 +27,8 @@ use Illuminate\Support\Facades\Route;
 // GET /posts - عرض قائمة المنشورات (يستدعي index).
 // POST /posts - إنشاء منشور جديد (يستدعي store).
 // GET /posts/{id} - عرض منشور معين (يستدعي show).
-// PUT/PATCH /posts/{id} - تحديث منشور معين (يستدعي update).
-// DELETE /posts/{id} - حذف منشور معين (يستدعي destroy).
+// PUT/PATCH /v1/posts/{id} - تحديث منشور معين (يستدعي update).
+// DELETE /v1/posts/{id} - حذف منشور معين (يستدعي destroy).
 //
 // المسارات التي لم يتم إنشاؤها بواسطة apiResource:
 //
@@ -42,8 +43,35 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // تخصيص مسارات للإصدار 1 من API
 Route::prefix('v1')->group(function () {
-    ########## مسارات المنشورات ##########
-    Route::prefix('posts')->group(function () {
+    // مسارات إدارة المصادقة (تسجيل الدخول، التسجيل، تسجيل الخروج، إلخ)
+    // هذه المسارات تتعامل مع مصادقة المستخدم وإدارة ملفه الشخصي
+    Route::group([
+        'middleware' => 'api',
+        'prefix' => 'auth'
+    ], function ($router) {
+        // مسار لتسجيل دخول المستخدم
+        // POST /v1/auth/login - مصادقة المستخدم وإرجاع توكن
+        Route::post('/login', [AuthController::class, 'login']);
+
+        // مسار لتسجيل مستخدم جديد
+        // POST /v1/auth/register - تسجيل مستخدم جديد وإرجاع توكن
+        Route::post('/register', [AuthController::class, 'register']);
+
+        // مسار لتسجيل خروج المستخدم
+        // POST /v1/auth/logout - تسجيل خروج المستخدم وإبطال التوكن
+        Route::post('/logout', [AuthController::class, 'logout']);
+
+        // مسار لتحديث التوكن
+        // POST /v1/auth/refresh - تحديث التوكن
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+
+        // مسار للحصول على ملف تعريف المستخدم
+        // GET /v1/auth/user-profile - استرجاع بيانات ملف المستخدم المصادق عليه
+        Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    });
+
+    // مجموعة مسارات المنشورات مع التحقق من التوكن
+    Route::middleware(['jwt.verify'])->prefix('posts')->group(function () {
         // مسارات الموارد الأساسية لـ PostController
         // هذا ينشئ المسارات التالية:
         // GET /v1/posts - عرض جميع المنشورات
@@ -69,5 +97,9 @@ Route::prefix('v1')->group(function () {
         // مسار مخصص لحذف منشور نهائيًا
         // DELETE /v1/posts/{id}/force-delete - حذف منشور محدد نهائيًا
         Route::delete('{id}/force-delete', [PostController::class, 'destroy'])->name('posts.force-delete');
+
+        // يمكنك إضافة مسارات جديدة هنا إذا لزم الأمر
     });
+
+    // يمكنك إضافة مجموعات أخرى من المسارات هنا إذا لزم الأمر
 });
