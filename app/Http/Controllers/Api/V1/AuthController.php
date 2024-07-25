@@ -79,7 +79,7 @@ class AuthController extends Controller
         );
 
         return response()->json([
-            'message' => 'تم تسجيل المستخدم بنجاح',
+            'message' => 'User has been registered successfully',
             'user' => $user
         ], 201);
     }
@@ -94,7 +94,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-        return response()->json(['message' => 'تم تسجيل خروج المستخدم بنجاح']);
+        return response()->json(['message' => 'The user has been successfully logged out']);
     }
 
     /**
