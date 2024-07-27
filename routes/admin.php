@@ -32,7 +32,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['jwt.verify'])->group(function () {
             ##### Posts Routes #####
             Route::apiResource('posts', PostController::class);
-            Route::get('posts/trashed', [PostController::class, 'trashed'])->name('posts.trashed');
+            // Route::get('posts/trashed', [PostController::class, 'trashed'])->name('posts.trashed');
+            Route::post('posts/trashed', [PostController::class, 'trashed'])->name('posts.trashed');
             Route::post('posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore');
             Route::delete('posts/{id}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
             ##### End Posts Routes #####

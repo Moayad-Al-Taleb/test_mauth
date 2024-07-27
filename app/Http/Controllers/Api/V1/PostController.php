@@ -17,7 +17,7 @@ class PostController extends Controller
     public function index()
     {
         try {
-            $posts = Post::whereNull('deleted_at')->get();
+            $posts = Post::all();
             return $this->apiResponse(Constants::SUCCESSFUL_RETRIEVAL, $posts, Constants::SUCCESS_CODE);
         } catch (\Exception $e) {
             return $this->apiResponse(Constants::OPERATION_FAILED . ': ' . $e->getMessage(), null, Constants::ERROR_CODE);
