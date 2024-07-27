@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::middleware(['jwt.verify'])->group(function () {
-            ##### Posts Routes #####
+            ##### Routes for PostController #####
             Route::get('posts', [PostController::class, 'index'])->name('posts.index');
             Route::post('posts', [PostController::class, 'store'])->name('posts.store');
             Route::get('posts/trashed', [PostController::class, 'trashed'])->name('posts.trashed');
@@ -40,7 +40,7 @@ Route::prefix('v1')->group(function () {
             Route::put('posts/{post}', [PostController::class, 'update'])->name('posts.update');
             Route::patch('posts/{post}', [PostController::class, 'update'])->name('posts.update'); // To cover PATCH method
             Route::delete('posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
-            ##### End Posts Routes #####
+            ##### End Routes for PostController #####
         });
     });
 });
