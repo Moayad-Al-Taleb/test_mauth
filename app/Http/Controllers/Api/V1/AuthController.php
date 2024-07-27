@@ -33,7 +33,7 @@ class AuthController extends Controller
     {
         // Validate the input data
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'phone' => ['required', 'string', 'regex:/^01[0125][0-9]{8}$/'],
             'password' => 'required|string|min:6',
         ]);
 
@@ -63,6 +63,12 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
+            'phone' => [
+                'required',
+                'string',
+                'unique:users',
+                'regex:/^01[0125][0-9]{8}$/', // 01012345678
+            ],
             'password' => 'required|string|confirmed|min:6',
         ]);
 
