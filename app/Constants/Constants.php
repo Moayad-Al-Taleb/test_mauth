@@ -4,11 +4,9 @@ namespace App\Constants;
 
 class Constants
 {
-    // أكواد الاستجابة
     const SUCCESS_CODE = 200;
     const ERROR_CODE = 400;
 
-    // رسائل الردود
     const SUCCESSFUL_RETRIEVAL = 'Successfully retrieved all data.';
     const SUCCESSFUL_CREATION = 'Successfully added.';
     const SUCCESSFUL_DISPLAY = 'Successfully displayed the item.';
@@ -19,6 +17,5 @@ class Constants
     const SUCCESSFUL_DELETION = 'Successfully deleted the item.';
     const SUCCESSFUL_QUERY = 'Successfully queried the data.';
 
-    // رسائل الخطأ
     const OPERATION_FAILED = 'Operation failed.';
 }

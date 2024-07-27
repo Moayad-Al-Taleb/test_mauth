@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     /**
-     * إنشاء مثيل جديد من AuthController.
+     * Create a new AuthController instance.
      *
-     * يحدد الـ middleware ليطبق على كل الطرق باستثناء 'login' و 'register'.
+     * Sets middleware to apply to all routes except 'login' and 'register'.
      *
      * @return void
      */
@@ -22,16 +22,16 @@ class AuthController extends Controller
     }
 
     /**
-     * الحصول على توكن JWT عبر بيانات الاعتماد المقدمة.
+     * Get a JWT via given credentials.
      *
-     * يتحقق من صحة بيانات الاعتماد ويقوم بإنشاء توكن إذا كانت البيانات صحيحة.
+     * Validates credentials and generates a token if data is correct.
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
     {
-        // التحقق من صحة البيانات المدخلة
+        // Validate the input data
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
@@ -41,7 +41,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // محاولة تسجيل الدخول والتحقق من صحة البيانات
+        // Attempt to log in and validate credentials
         if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -50,16 +50,16 @@ class AuthController extends Controller
     }
 
     /**
-     * تسجيل مستخدم جديد.
+     * Register a new user.
      *
-     * يقوم بإنشاء مستخدم جديد وتشفير كلمة المرور.
+     * Creates a new user and hashes the password.
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {
-        // التحقق من صحة بيانات التسجيل
+        // Validate registration data
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
@@ -70,7 +70,7 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        // إنشاء المستخدم وتشفير كلمة المرور
+        // Create user and hash the password
         $user = User::create(
             array_merge(
                 $validator->validated(),
@@ -85,9 +85,9 @@ class AuthController extends Controller
     }
 
     /**
-     * تسجيل خروج المستخدم (إبطال التوكن).
+     * Log the user out (invalidate the token).
      *
-     * يقوم بتسجيل خروج المستخدم وإبطال توكن الجلسة الحالية.
+     * Logs the user out and invalidates the current session token.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -98,9 +98,9 @@ class AuthController extends Controller
     }
 
     /**
-     * تحديث التوكن.
+     * Refresh a token.
      *
-     * يقوم بتحديث توكن المستخدم وإرجاع التوكن الجديد.
+     * Refreshes the user's token and returns the new token.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -110,9 +110,9 @@ class AuthController extends Controller
     }
 
     /**
-     * الحصول على معلومات المستخدم المصادق عليه.
+     * Get the authenticated user's profile.
      *
-     * يعرض بيانات المستخدم المصادق عليه حاليًا.
+     * Displays the currently authenticated user's data.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -122,9 +122,9 @@ class AuthController extends Controller
     }
 
     /**
-     * الحصول على هيكلية توكن الـ JWT.
+     * Get the token structure.
      *
-     * يعيد هيكلية التوكن بما في ذلك التوكن نفسه ونوعه ومدة صلاحيته ومعلومات المستخدم.
+     * Returns the token structure including the token itself, type, expiry, and user information.
      *
      * @param string $token
      * @return \Illuminate\Http\JsonResponse

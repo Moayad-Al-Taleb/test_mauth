@@ -8,38 +8,23 @@ use App\Constants\Constants;
 trait ApiResponse
 {
     /**
-     * Get a standardized success response.
-     *
-     * @param string|null $message
-     * @param mixed $data
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function successResponse(string $message = null, $data = null)
-    {
-        return response()->json([
-            'code' => Constants::SUCCESS_CODE,
-            'message' => $message,
-            'data' => $data,
-        ]);
-    }
-
-    /**
-     * Get a standardized error response.
+     * Get a standardized response.
      *
      * @param string $message
-     * @param \Exception $exception
+     * @param mixed $data
+     * @param int $code
      * @return \Illuminate\Http\JsonResponse
      */
-    public function errorResponse(string $message, \Exception $exception)
+    public function apiResponse(string $message, $data = null, int $code)
     {
-        $errorMessage = $message . ': ' . $exception->getMessage();
-        Log::error($errorMessage);
+        if ($code === Constants::ERROR_CODE) {
+            Log::error($message);
+        }
 
         return response()->json([
-            'code' => Constants::ERROR_CODE,
+            'code' => $code,
             'message' => $message,
-            'error' => $exception->getMessage(), // Include detailed error message
-            'data' => null,
+            'data' => $data,
         ]);
     }
 }
