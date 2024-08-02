@@ -142,7 +142,7 @@ class AuthProviderController extends Controller
     /**
      * Get the token structure.
      *
-     * Returns the token structure including the token itself, type, expiry, user information, and permissions.
+     * Returns the token structure including the token itself, type, expiry, provider information, and permissions.
      *
      * @param string $token
      * @return \Illuminate\Http\JsonResponse
@@ -150,10 +150,15 @@ class AuthProviderController extends Controller
     protected function createNewToken($token)
     {
         // Get the currently authenticated provider
-        $provider = auth()->guard('provider')->user();
+        $provider = auth()->guard('provider')->user()->makeHidden(['permissions']);
 
         // Load permissions for the provider
-        $permissions = $provider->permissions;
+        $permissions = $provider->permissions->map(function ($permission) {
+            return [
+                'id' => $permission->id,
+                'name' => $permission->name
+            ];
+        });
 
         return response()->json([
             'access_token' => $token,

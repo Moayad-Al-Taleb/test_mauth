@@ -146,17 +146,25 @@ class AuthController extends Controller
     /**
      * Get the token structure.
      *
-     * Returns the token structure including the token itself, type, expiry, and user information.
+     * Returns the token structure including the token itself, type, expiry, user information, and permissions.
      *
      * @param string $token
      * @return \Illuminate\Http\JsonResponse
      */
     protected function createNewToken($token)
     {
-        $user = auth()->user()->load('permissions');
+        // Get the authenticated user without loading roles and permissions
+        $user = auth()->user()->makeHidden(['roles', 'permissions']);
 
-        // Get all the permissions with all fields
-        $permissions = $user->permissions;
+        // Get all unique permissions from the user's roles
+        $permissions = auth()->user()->roles->flatMap(function ($role) {
+            return $role->permissions->map(function ($permission) {
+                return [
+                    'id' => $permission->id,
+                    'name' => $permission->name
+                ];
+            });
+        })->unique('id'); // Ensure permissions are unique
 
         return response()->json([
             'access_token' => $token,

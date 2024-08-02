@@ -142,7 +142,7 @@ class AuthApplicantController extends Controller
     /**
      * Get the token structure.
      *
-     * Returns the token structure including the token itself, type, expiry, user information, and permissions.
+     * Returns the token structure including the token itself, type, expiry, applicant information, and permissions.
      *
      * @param string $token
      * @return \Illuminate\Http\JsonResponse
@@ -150,10 +150,15 @@ class AuthApplicantController extends Controller
     protected function createNewToken($token)
     {
         // Get the currently authenticated applicant
-        $applicant = auth()->guard('applicant')->user();
+        $applicant = auth()->guard('applicant')->user()->makeHidden(['permissions']);
 
         // Load permissions for the applicant
-        $permissions = $applicant->permissions;
+        $permissions = $applicant->permissions->map(function ($permission) {
+            return [
+                'id' => $permission->id,
+                'name' => $permission->name
+            ];
+        });
 
         return response()->json([
             'access_token' => $token,
