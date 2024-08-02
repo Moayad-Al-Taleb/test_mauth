@@ -51,9 +51,9 @@ class AuthProviderController extends Controller
     }
 
     /**
-     * Register a new user.
+     * Register a new provider.
      *
-     * Creates a new user and hashes the password.
+     * Creates a new provider and hashes the password.
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -73,11 +73,12 @@ class AuthProviderController extends Controller
             'password' => 'required|string|confirmed|min:6',
         ]);
 
+        // If validation fails, return a JSON response with errors
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        // Create user and hash the password
+        // Create provider and hash the password
         $provider = Provider::create(
             array_merge(
                 $validator->validated(),
@@ -85,10 +86,12 @@ class AuthProviderController extends Controller
             )
         );
 
-        $provider->assignRole([3]);
+        // Assign the 'Provider' role to the new provider
+        $provider->assignRole('Provider');
 
+        // Return a JSON response indicating successful registration
         return response()->json([
-            'message' => 'User has been registered successfully',
+            'message' => 'Provider has been registered successfully',
             'provider' => $provider
         ], 201);
     }
@@ -102,7 +105,7 @@ class AuthProviderController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        auth()->guard('provider')->logout();
         return response()->json(['message' => 'The user has been successfully logged out']);
     }
 
@@ -115,7 +118,7 @@ class AuthProviderController extends Controller
      */
     public function refresh()
     {
-        return $this->createNewToken(auth()->refresh());
+        return $this->createNewToken(auth()->guard('provider')->refresh());
     }
 
     /**
@@ -133,18 +136,25 @@ class AuthProviderController extends Controller
     /**
      * Get the token structure.
      *
-     * Returns the token structure including the token itself, type, expiry, and user information.
+     * Returns the token structure including the token itself, type, expiry, user information, and permissions.
      *
      * @param string $token
      * @return \Illuminate\Http\JsonResponse
      */
     protected function createNewToken($token)
     {
+        // Get the currently authenticated provider
+        $provider = auth()->guard('provider')->user();
+
+        // Load permissions for the provider
+        $permissions = $provider->permissions;
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'provider' => auth()->guard('provider')->user()
+            'provider' => $provider,
+            'permissions' => $permissions
         ]);
     }
 }

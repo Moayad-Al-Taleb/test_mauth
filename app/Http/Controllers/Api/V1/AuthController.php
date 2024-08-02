@@ -52,10 +52,16 @@ class AuthController extends Controller
     /**
      * Register a new user.
      *
-     * Creates a new user and hashes the password.
+     * This function handles the registration of a new user. It performs
+     * the following tasks:
+     * - Validates the registration data provided in the request.
+     * - Creates a new user with the validated data.
+     * - Hashes the user's password before storing it.
+     * - Assigns the specified roles to the new user.
+     * - Returns a JSON response indicating the success or failure of the registration.
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request The HTTP request containing the registration data.
+     * @return \Illuminate\Http\JsonResponse The JSON response indicating the result of the registration process.
      */
     public function register(Request $request)
     {
@@ -67,11 +73,13 @@ class AuthController extends Controller
                 'required',
                 'string',
                 'unique:users',
-                'regex:/^01[0125][0-9]{8}$/', // 01012345678
+                'regex:/^01[0125][0-9]{8}$/', // Egyptian phone numbers: 01012345678
             ],
             'password' => 'required|string|confirmed|min:6',
+            'roles_name' => 'required|array',
         ]);
 
+        // If validation fails, return a JSON response with errors
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
@@ -84,6 +92,10 @@ class AuthController extends Controller
             )
         );
 
+        // Assign specified roles to the new user
+        $user->assignRole($request->input('roles_name'));
+
+        // Return a JSON response indicating successful registration
         return response()->json([
             'message' => 'User has been registered successfully',
             'user' => $user
@@ -137,9 +149,10 @@ class AuthController extends Controller
      */
     protected function createNewToken($token)
     {
-        $user = auth()->user()->load('roles.permissions');
+        $user = auth()->user()->load('permissions');
 
-        $permissions = $user->roles->flatMap->permissions->pluck('name')->unique()->values();
+        // Get all the permissions with all fields
+        $permissions = $user->permissions;
 
         return response()->json([
             'access_token' => $token,

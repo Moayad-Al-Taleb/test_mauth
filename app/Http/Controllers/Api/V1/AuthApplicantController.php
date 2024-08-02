@@ -52,9 +52,9 @@ class AuthApplicantController extends Controller
     }
 
     /**
-     * Register a new user.
+     * Register a new applicant.
      *
-     * Creates a new user and hashes the password.
+     * Creates a new applicant and hashes the password.
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -69,16 +69,17 @@ class AuthApplicantController extends Controller
                 'required',
                 'string',
                 'unique:applicants',
-                'regex:/^01[0125][0-9]{8}$/', // 01012345678
+                'regex:/^01[0125][0-9]{8}$/', // Egyptian phone numbers: 01012345678
             ],
             'password' => 'required|string|confirmed|min:6',
         ]);
 
+        // If validation fails, return a JSON response with errors
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        // Create user and hash the password
+        // Create applicant and hash the password
         $applicant = Applicant::create(
             array_merge(
                 $validator->validated(),
@@ -86,10 +87,12 @@ class AuthApplicantController extends Controller
             )
         );
 
-        $applicant->assignRole([2]);
+        // Assign the role with name 'Applicant'
+        $applicant->assignRole('Applicant');
 
+        // Return a JSON response indicating successful registration
         return response()->json([
-            'message' => 'User has been registered successfully',
+            'message' => 'Applicant has been registered successfully',
             'applicant' => $applicant
         ], 201);
     }
@@ -103,7 +106,7 @@ class AuthApplicantController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        auth()->guard('applicant')->logout();
         return response()->json(['message' => 'The user has been successfully logged out']);
     }
 
@@ -116,7 +119,7 @@ class AuthApplicantController extends Controller
      */
     public function refresh()
     {
-        return $this->createNewToken(auth()->refresh());
+        return $this->createNewToken(auth()->guard('applicant')->refresh());
     }
 
     /**
@@ -134,18 +137,25 @@ class AuthApplicantController extends Controller
     /**
      * Get the token structure.
      *
-     * Returns the token structure including the token itself, type, expiry, and user information.
+     * Returns the token structure including the token itself, type, expiry, user information, and permissions.
      *
      * @param string $token
      * @return \Illuminate\Http\JsonResponse
      */
     protected function createNewToken($token)
     {
+        // Get the currently authenticated applicant
+        $applicant = auth()->guard('applicant')->user();
+
+        // Load permissions for the applicant
+        $permissions = $applicant->permissions;
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'applicant' => auth()->guard('applicant')->user()
+            'applicant' => $applicant,
+            'permissions' => $permissions
         ]);
     }
 }
