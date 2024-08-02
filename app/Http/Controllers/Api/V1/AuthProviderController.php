@@ -85,6 +85,8 @@ class AuthProviderController extends Controller
             )
         );
 
+        $provider->assignRole([3]);
+
         return response()->json([
             'message' => 'User has been registered successfully',
             'provider' => $provider

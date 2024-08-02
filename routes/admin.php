@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PostController;
+use App\Http\Controllers\Api\V1\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,16 @@ Route::prefix('v1')->group(function () {
             Route::patch('posts/{post}', [PostController::class, 'update'])->name('posts.update'); // To cover PATCH method
             Route::delete('posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
             ##### End Routes for PostController #####
+
+            ##### Routes for RoleController #####
+            Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+            Route::get('roles/permissions', [RoleController::class, 'permissions'])->name('roles.permissions');
+            Route::post('roles', [RoleController::class, 'store'])->name('roles.store');
+            Route::get('roles/{id}', [RoleController::class, 'show'])->name('roles.show');
+            Route::put('roles/{id}', [RoleController::class, 'update'])->name('roles.update'); // Changed from POST to PUT for update
+            Route::patch('roles/{id}', [RoleController::class, 'update'])->name('roles.update'); // To cover PATCH method
+            Route::delete('roles/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
+            ##### End Routes for RoleController #####
         });
     });
 });

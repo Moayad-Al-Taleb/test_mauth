@@ -14,6 +14,18 @@ class PostController extends Controller
 {
     use ApiResponse;
 
+    public function __construct()
+    {
+        $this->middleware('permission:View Posts', ['only' => ['index']]);
+        $this->middleware('permission:Add Post', ['only' => ['store']]);
+        $this->middleware('permission:View Post By ID', ['only' => ['show']]);
+        $this->middleware('permission:Edit Post', ['only' => ['update']]);
+        $this->middleware('permission:Archive Post', ['only' => ['destroy']]);
+        $this->middleware('permission:View Archived Posts', ['only' => ['trashed']]);
+        $this->middleware('permission:Restore Post', ['only' => ['restore']]);
+        $this->middleware('permission:Delete Post', ['only' => ['forceDelete']]);
+    }
+
     /**
      * Display a listing of the posts.
      */

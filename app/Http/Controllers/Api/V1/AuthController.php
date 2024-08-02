@@ -137,11 +137,16 @@ class AuthController extends Controller
      */
     protected function createNewToken($token)
     {
+        $user = auth()->user()->load('roles.permissions');
+
+        $permissions = $user->roles->flatMap->permissions->pluck('name')->unique()->values();
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+            'user' => $user,
+            'permissions' => $permissions
         ]);
     }
 }
