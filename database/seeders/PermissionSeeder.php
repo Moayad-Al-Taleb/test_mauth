@@ -10,16 +10,20 @@ class PermissionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * This method seeds the database with initial permissions.
      */
     public function run(): void
     {
         $permissions = [
+            // Permissions related to role management
             'Roles View Roles',
             'Roles Add Role',
             'Roles View Role By ID',
             'Roles Edit Role',
             'Roles Delete Role',
 
+            // Permissions related to post management
             'View Posts',
             'Add Post',
             'View Post By ID',
@@ -30,9 +34,10 @@ class PermissionSeeder extends Seeder
             'Delete Post',
         ];
 
+        // Iterate over each permission and create it in the database
         foreach ($permissions as $permission) {
             Permission::create([
-                'name' => $permission
+                'name' => $permission  // Set the name of the permission
             ]);
         }
     }
