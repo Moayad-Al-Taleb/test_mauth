@@ -76,23 +76,27 @@ class AuthController extends Controller
                 'regex:/^01[0125][0-9]{8}$/', // Egyptian phone numbers: 01012345678
             ],
             'password' => 'required|string|confirmed|min:6',
+            'roles_name' => 'required|array', // Validate that roles_name is an array
+            'roles_name.*' => 'string|exists:roles,name', // Each role must be a string and must exist in the roles table
         ]);
 
         // If validation fails, return a JSON response with errors
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 400);
         }
 
         // Create user and hash the password
-        $user = User::create(
-            array_merge(
-                $validator->validated(),
-                ['password' => bcrypt($request->password)]
-            )
-        );
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'password' => bcrypt($request->input('password')), // Hash the password
+        ]);
 
-        // Assign the role with ID 1 to the new user
-        $user->assignRole(1);
+        // Assign roles to the new user
+        $user->assignRole($request->input('roles_name'));
 
         // Return a JSON response indicating successful registration
         return response()->json([
@@ -100,6 +104,7 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     }
+
 
     /**
      * Log the user out (invalidate the token).
