@@ -57,7 +57,7 @@ class AuthController extends Controller
      * - Validates the registration data provided in the request.
      * - Creates a new user with the validated data.
      * - Hashes the user's password before storing it.
-     * - Assigns the specified roles to the new user.
+     * - Assigns the specified role(s) to the new user.
      * - Returns a JSON response indicating the success or failure of the registration.
      *
      * @param Request $request The HTTP request containing the registration data.
@@ -76,7 +76,6 @@ class AuthController extends Controller
                 'regex:/^01[0125][0-9]{8}$/', // Egyptian phone numbers: 01012345678
             ],
             'password' => 'required|string|confirmed|min:6',
-            'roles_name' => 'required|array',
         ]);
 
         // If validation fails, return a JSON response with errors
@@ -92,8 +91,8 @@ class AuthController extends Controller
             )
         );
 
-        // Assign specified roles to the new user
-        $user->assignRole($request->input('roles_name'));
+        // Assign the role with ID 1 to the new user
+        $user->assignRole(1);
 
         // Return a JSON response indicating successful registration
         return response()->json([

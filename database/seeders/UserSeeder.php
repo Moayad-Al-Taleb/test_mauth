@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
         $AdminRole = Role::create(['name' => 'Admin']);
         $AllPermissions = Permission::pluck('id')->all();
         $AdminRole->syncPermissions($AllPermissions);
-        $user->assignRole([$AdminRole->id]);
+        $user->assignRole($AdminRole->id);
 
         $ProviderRole = Role::create(['name' => 'Provider']);
         $ProviderPermissions = Permission::whereIn('id', [6, 7, 8, 9, 10])->pluck('id')->all();

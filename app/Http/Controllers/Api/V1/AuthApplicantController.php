@@ -54,10 +54,15 @@ class AuthApplicantController extends Controller
     /**
      * Register a new applicant.
      *
-     * Creates a new applicant and hashes the password.
+     * This function handles the registration of a new applicant. It performs
+     * the following tasks:
+     * - Validates the registration data provided in the request.
+     * - Creates a new applicant with the validated data and hashes their password.
+     * - Assigns the specified role to the new applicant.
+     * - Returns a JSON response indicating the success or failure of the registration process.
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request The HTTP request containing the registration data.
+     * @return \Illuminate\Http\JsonResponse The JSON response indicating the result of the registration process.
      */
     public function register(Request $request)
     {
@@ -87,8 +92,8 @@ class AuthApplicantController extends Controller
             )
         );
 
-        // Assign the role with name 'Applicant'
-        $applicant->assignRole('Applicant');
+        // Assign the role with ID 3 to the new applicant
+        $applicant->assignRole(3);
 
         // Return a JSON response indicating successful registration
         return response()->json([

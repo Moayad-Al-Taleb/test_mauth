@@ -53,10 +53,16 @@ class AuthProviderController extends Controller
     /**
      * Register a new provider.
      *
-     * Creates a new provider and hashes the password.
+     * This function handles the registration of a new provider. It performs
+     * the following tasks:
+     * - Validates the registration data provided in the request.
+     * - Creates a new provider with the validated data.
+     * - Hashes the provider's password before storing it.
+     * - Assigns the specified role(s) to the new provider.
+     * - Returns a JSON response indicating the success or failure of the registration.
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request The HTTP request containing the registration data.
+     * @return \Illuminate\Http\JsonResponse The JSON response indicating the result of the registration process.
      */
     public function register(Request $request)
     {
@@ -68,7 +74,7 @@ class AuthProviderController extends Controller
                 'required',
                 'string',
                 'unique:providers',
-                'regex:/^01[0125][0-9]{8}$/', // 01012345678
+                'regex:/^01[0125][0-9]{8}$/', // Egyptian phone numbers: 01012345678
             ],
             'password' => 'required|string|confirmed|min:6',
         ]);
@@ -86,8 +92,8 @@ class AuthProviderController extends Controller
             )
         );
 
-        // Assign the 'Provider' role to the new provider
-        $provider->assignRole('Provider');
+        // Assign the role with ID 2 to the new provider
+        $provider->assignRole(2);
 
         // Return a JSON response indicating successful registration
         return response()->json([
